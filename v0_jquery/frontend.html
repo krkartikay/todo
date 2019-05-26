@@ -1,40 +1,59 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>To-Do App</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>To-Do App</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <link rel='stylesheet' href='https://cdn.jsdelivr.net/gh/kognise/water.css@latest/dist/dark.min.css'>
+  <script>
+    function add_todo() {
+      var title = $("#new_todo").val();
+      $("#todo-list").append(
+        $("<li/>").append(
+          $("<div class='todo'/>").append(
+            $("<input type='checkbox' class='todo-check'>")
+          ).append(
+            $("<span class='todo-title'/>").text(title)
+          )
+        )
+      );
+      $("#new_todo").val("");
+    }
+  </script>
 </head>
+
 <body>
-    <div id="main">
-        <div id="heading">
-            <h1>To-Do's</h1>
-        </div>
-
-        <ul>
-            <li>
-                <div class="todo">
-                    <input type="checkbox" class="todo-check">
-                    <span class="todo-title">
-                        Get Stuff Done
-                    </span>
-                </div>
-            </li>
-            <li>
-                <div class="todo">
-                    <input type="checkbox" class="todo-check">
-                    <span class="todo-title">
-                        Get Stuff Done - 2
-                    </span>
-                </div>
-            </li>
-        </ul>
-
-        <div id="new">
-            <input type="text" id="new_todo">
-            <button>+</button>
-        </div>
+  <div id="main">
+    <div id="heading">
+      <h1>To-Do's</h1>
     </div>
+
+    <ul id="todo-list">
+      <li>
+        <div class="todo">
+          <input type="checkbox" class="todo-check">
+          <span class="todo-title">
+            Get Stuff Done
+          </span>
+        </div>
+      </li>
+      <li>
+        <div class="todo">
+          <input type="checkbox" class="todo-check">
+          <span class="todo-title">
+            Get Stuff Done - 2
+          </span>
+        </div>
+      </li>
+    </ul>
+
+    <div id="new">
+      <input type="text" id="new_todo">
+      <button onclick="add_todo()">+</button>
+    </div>
+  </div>
 </body>
+
 </html>
