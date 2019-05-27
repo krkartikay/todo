@@ -8,6 +8,9 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
   <link rel='stylesheet' href='https://cdn.jsdelivr.net/gh/kognise/water.css@latest/dist/dark.min.css'>
   <script>
+
+    todo_data = [];
+
     $(document).ready(function name(params) {
       // run this function when the document is loaded
       // whenever enter key is pressed in #new_todo, add the todo
@@ -16,32 +19,53 @@
           add_todo()
         }
       });
+      load_todos();
     });
 
-    function add_todo() {
-      var title = $("#new_todo").val();
-      var todo_id = $(".todo").length + 1;
+    function display_todo(id, title, fin){
       $("#todo-list").append(
         $("<li/>").append(
-          $(`<div id='todo-${todo_id}' class='todo'/>`).append(
+          $(`<div id='todo-${id}' class='todo'/>`).append(
             $("<div class='todo-title'/>").text(title)
+            .css("text-decoration", fin ? "line-through" : "none")
           ).append(
-            $("<input type='checkbox' class='todo-check'>").on("change",
+            $(`<input type='checkbox' class='todo-check' ${fin ? "checked" : ""}>`)
+              .on("change",
               function () {
-                todo_checked(todo_id);
+                todo_checked(id);
               }
             )
           )
         )
       );
+    }
+
+    function add_todo() {
+      var title = $("#new_todo").val();
+      var todo_id = $(".todo").length + 1;
+      display_todo(todo_id, title, false);
+      todo_data.push({"todo_id": todo_id, "title": title, "finished": false});
+      sessionStorage.setItem("todo_data", JSON.stringify(todo_data));
       $("#new_todo").val("");
     }
 
     function todo_checked(idx) {
       if ($(`#todo-${idx} input`).is(":checked")) {
         $(`#todo-${idx} div`).css("text-decoration", "line-through");
+        todo_data[idx-1].finished = true;
       } else {
         $(`#todo-${idx} div`).css("text-decoration", "none");
+        todo_data[idx-1].finished = false;
+      }
+      sessionStorage.setItem("todo_data", JSON.stringify(todo_data));
+    }
+
+    function load_todos(){
+      todo_data = sessionStorage.getItem("todo_data");
+      todo_data = JSON.parse(todo_data);
+      for (let i = 0; i < todo_data.length; i++) {
+        var todo = todo_data[i];
+        display_todo(todo.todo_id, todo.title, todo.finished);
       }
     }
   </script>
