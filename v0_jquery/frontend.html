@@ -8,20 +8,50 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
   <link rel='stylesheet' href='https://cdn.jsdelivr.net/gh/kognise/water.css@latest/dist/dark.min.css'>
   <script>
+    $(document).ready(function name(params) {
+      // run this function when the document is loaded
+      // whenever enter key is pressed in #new_todo, add the todo
+      $('#new_todo').keyup(function (event) {
+        if (event.key == "Enter") {
+          add_todo()
+        }
+      });
+    });
+
     function add_todo() {
       var title = $("#new_todo").val();
+      var todo_id = $(".todo").length + 1;
       $("#todo-list").append(
         $("<li/>").append(
-          $("<div class='todo'/>").append(
-            $("<input type='checkbox' class='todo-check'>")
+          $(`<div id='todo-${todo_id}' class='todo'/>`).append(
+            $("<div class='todo-title'/>").text(title)
           ).append(
-            $("<span class='todo-title'/>").text(title)
+            $("<input type='checkbox' class='todo-check'>").on("change",
+              function () {
+                todo_checked(todo_id);
+              }
+            )
           )
         )
       );
       $("#new_todo").val("");
     }
+
+    function todo_checked(idx) {
+      if ($(`#todo-${idx} input`).is(":checked")) {
+        $(`#todo-${idx} div`).css("text-decoration", "line-through");
+      } else {
+        $(`#todo-${idx} div`).css("text-decoration", "none");
+      }
+    }
   </script>
+  <style>
+    .todo-title{
+      display: inline-block;
+      width: 200px;
+      height: 35px;
+    }
+  </style>
 </head>
 
 <body>
@@ -31,26 +61,10 @@
     </div>
 
     <ul id="todo-list">
-      <li>
-        <div class="todo">
-          <input type="checkbox" class="todo-check">
-          <span class="todo-title">
-            Get Stuff Done
-          </span>
-        </div>
-      </li>
-      <li>
-        <div class="todo">
-          <input type="checkbox" class="todo-check">
-          <span class="todo-title">
-            Get Stuff Done - 2
-          </span>
-        </div>
-      </li>
     </ul>
 
     <div id="new">
-      <input type="text" id="new_todo">
+      <input type="text" id="new_todo" style="display:inline-block">
       <button onclick="add_todo()">+</button>
     </div>
   </div>
