@@ -1,24 +1,25 @@
 import React from 'react';
 import './TodoApp.css';
 
-class App extends React.Component() {
+class App extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {todos:[]};
+        this.state = { todos: [{ "todoid": 5, "title": "gotta go fast", "timestamp": 1558940416.3939812 }]};
     }
     render() {
         return (
-        <div>
-            <list/>
-        </div>
+            <ul>
+                {this.state.todos.map((todoData) => <TodoItem data={todoData} />)}
+            </ul>
         );
     }
 }
 
-function list(props) {
+function TodoItem(props) {
     return (
-        <div>
-        </div>
+        <li>
+            {props.data.title}
+        </li>
     );
 }
 
