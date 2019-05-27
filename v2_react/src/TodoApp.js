@@ -1,10 +1,27 @@
 import React from 'react';
 import './TodoApp.css';
 
-function App() {
+class App extends React.Component() {
+    constructor(props) {
+        super(props);
+        this.state = {todos:[]};
+    }
+    render() {
+        return (
+        <div>
+            <list/>
+        </div>
+        );
+    }
+}
+
+function list(props) {
     return (
-        <p> Hello World </p>
+        <div>
+        </div>
     );
 }
+
+
 
 export default App;
