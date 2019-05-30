@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do App</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <link rel='stylesheet' href='https://cdn.jsdelivr.net/gh/kognise/water.css@latest/dist/dark.min.css'>
+    <script>
+
+        todo_data = [];
+
+        $(document).ready(function name(params) {
+            // run this function when the document is loaded
+            // whenever enter key is pressed in #new_todo, add the todo
+            $('#new_todo').keyup(function (event) {
+                if (event.key == "Enter") {
+                    add_todo()
+                }
+            });
+            refresh_todos();
+        });
+
+        function display_todo(todo) {            
+            $("#todo-list").append(
+                $("<li/>").append(
+                    $(`<div class='todo'/>`).append(
+                        $("<div class='todo-title'/>").text(todo.title)
+                            .css("text-decoration", todo.finished ? "line-through" : "none")
+                    ).append(
+                        $(`<input type='checkbox' class='todo-check' ${todo.finished ? "checked" : ""}>`)
+                            .on("change",
+                                function () {
+                                    todo_checked(todo.id);
+                                }
+                            )
+                    ).append(
+                        $(`<small> Added on: ${new Date(todo.timestamp * 1e3).toLocaleString()}</small>`)
+                    )
+                )
+            );
+        }
+
+        function add_todo() {
+            var title = $("#new_todo").val();
+            var todo_id = $(".todo").length + 1;
+            $.ajax("http://127.0.0.1:5000/addTodo", {
+                "method": "POST",
+                "contentType": "application/json",
+                "data": JSON.stringify({"title": title}),
+            }).done(function () {
+                refresh_todos();
+            })
+        }
+
+        function todo_checked(idx) {
+            $.ajax("http://127.0.0.1:5000/toggleFinished", {
+                "method": "POST",
+                "contentType": "application/json",
+                "data": JSON.stringify({"todoid": idx}),
+            }).done(function () {
+                refresh_todos();
+            })
+        }
+
+        function refresh_todos() {
+            $.ajax("http://127.0.0.1:5000/allTodos").done(function (data, status) {
+                $("#todo-list").empty();
+                for (var todo of data) {
+                    display_todo(todo);
+                }
+            }).fail(function (data, status) {
+                console.log("Error in refresh_todos:", data.statusText, status);
+            });
+        }
+    </script>
+    <style>
+        .todo-title {
+            display: inline-block;
+            width: 200px;
+        }
+        .todo {
+            height: 58px;
+        }
+        .todo small{
+            display: block;
+            color: #dbdbdb82;
+            font-style: italic;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="main">
+        <div id="heading">
+            <h1>To-Do's</h1>
+        </div>
+
+        <ul id="todo-list">
+        </ul>
+
+        <div id="new">
+            <input type="text" id="new_todo" style="display:inline-block">
+            <button onclick="add_todo()">+</button>
+        </div>
+    </div>
+</body>
+
+</html>

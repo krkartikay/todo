@@ -6,6 +6,7 @@ app = Flask(__name__)
 
 DATABASE = 'todos.db'
 
+# format:
 # CREATE TABLE "todos" (
 # 	"id"	INTEGER PRIMARY KEY AUTOINCREMENT,
 # 	"title"	TEXT NOT NULL,
@@ -45,6 +46,10 @@ def query_db(query, args=(), one=False):
 # use like: user = query_db('select * from users \
 #                  where username = ?', [the_username], one=True)
 ###############################################################
+
+@app.route("/")
+def home():
+    return render_template("frontend.html")
 
 @app.route("/allTodos")
 def allTodos():
