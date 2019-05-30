@@ -3,15 +3,14 @@ import sqlite3
 from flask import *
 
 app = Flask(__name__)
-app.secret_key = "secret!"
 
 DATABASE = 'todos.db'
 
 # CREATE TABLE "todos" (
-#	"id"	INTEGER PRIMARY KEY AUTOINCREMENT,
-#	"title"	TEXT NOT NULL,
-#	"body"	TEXT,
-#	"timestamp"	INTEGER
+# 	"id"	INTEGER PRIMARY KEY AUTOINCREMENT,
+# 	"title"	TEXT NOT NULL,
+# 	"finished"	INTEGER NOT NULL,
+# 	"timestamp"	INTEGER
 # )
 
 ##############################################################
@@ -43,43 +42,34 @@ def query_db(query, args=(), one=False):
         con.commit()
 
 
-# use like: user = query_db('select * from users where username = ?', [the_username], one=True)
+# use like: user = query_db('select * from users \
+#                  where username = ?', [the_username], one=True)
 ###############################################################
 
-@app.route("/addTodo", methods=["POST"])
-def add_todo():
-    if not request.json:
-        return jsonify({"success": False, "error": "No json data found!"})
-    try:
-        title = request.json['title']
-        body = request.json.get('body', '')
-        timestamp = time.time()
-        next_id = query_db("select max(id) from todos", one=True)[0]
-        next_id = 1 if next_id is None else next_id+1
-        query_db("insert into todos values (?,?,?,?)", [next_id, title, body, timestamp])
-        return jsonify({"success": True, "todoId": next_id})
-    except KeyError:
-        return jsonify({"success": False, "error": "Required arguments not specified!"})
-
-@app.route("/delTodo", methods=["POST"])
-def del_todo():
-    if not request.json:
-        return jsonify({"success": False, "error": "No json data found!"})
-    try:
-        todo_id = request.json['todoId']
-        query_db("delete from todos where id=?", [todo_id])
-        return jsonify({"success": True})
-    except KeyError:
-        return jsonify({"success": False, "error": "Required arguments not specified!"})
-
-    return jsonify({"success": True})
-
-@app.route("/")
 @app.route("/allTodos")
-def all_todos():
+def allTodos():
     data = query_db("select * from todos")
     resp = [dict(x) for x in data]
     return jsonify(resp)
+
+
+@app.route("/addTodo", methods=["POST"])
+def addTodo():
+    title = request.json['title']
+    finished = request.json.get('finished', 0)
+    timestamp = time.time()
+    next_id = query_db("select max(id) from todos", one=True)[0]
+    next_id = 1 if next_id is None else next_id+1
+    query_db("insert into todos values (?,?,?,?)",
+                [next_id, title, finished, timestamp])
+    return jsonify({"success": True, "todoid": next_id})
+
+@app.route("/toggleFinished", methods=["POST"])
+def toggleFinished():
+    todoid = request.json['todoid']
+    cur_fin = query_db("select finished from todos where id=?", [todoid], one=True)[0]
+    query_db("update todos set finished=? where id=?", [not cur_fin, todoid])
+    return jsonify({"success": True})
 
 if __name__ == "__main__":
     app.run(debug=True)
