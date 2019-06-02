@@ -61,8 +61,10 @@
     }
 
     function load_todos(){
-      todo_data = sessionStorage.getItem("todo_data");
-      todo_data = JSON.parse(todo_data);
+      if (sessionStorage.todo_data){
+        todo_data = sessionStorage.getItem("todo_data");
+        todo_data = JSON.parse(todo_data);
+      }
       for (let i = 0; i < todo_data.length; i++) {
         var todo = todo_data[i];
         display_todo(todo.todo_id, todo.title, todo.finished);
